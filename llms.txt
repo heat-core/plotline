@@ -1,0 +1,22 @@
+# Plotline
+
+> Plotline is an offline-first, private TV series and movie tracker with exact binge-time analytics, self-hosted Docker support, and multi-platform migration tools (TV Time, Trakt, Letterboxd).
+
+## Overview
+Plotline was created following the shutdown of TV Time to provide a durable, 100% self-hosted and offline alternative that guarantees user data ownership. It runs on lightweight Python with SQLite, requires zero cloud dependencies, and features automated scrobbling from Jellyfin and Plex.
+
+## Key Capabilities
+- TV show, anime, and movie tracking with season/episode check-ins and rewatch counters.
+- Calculation of total binge-watch time formatted in months, days, hours, and minutes.
+- iOS TV Time backup extraction (.imazingapp, DioCache.db).
+- Multi-platform data import from Letterboxd (CSV), Trakt.tv (JSON), and TV Time.
+- Offline metadata caching with hybrid storage mode (stream online vs save offline).
+- Achievement milestones and shareable infographic cards ("Plotline Wrapped").
+- Local hard drive video file scanner with filename tag cleaning.
+- Jellyfin and Plex webhook scrobbling for automated tracking.
+- Docker multi-arch support and Progressive Web App (PWA) mobile installation.
+
+## Repository & Links
+- Repository: https://github.com/heat-core/plotline
+- License: MIT License
+- Tech Stack: Python 3.9+, SQLite3 WAL, Vanilla JavaScript, Docker, PWA

@@ -1,0 +1,3256 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plotline | Offline & Self-Hosted TV, Anime & Movie Tracker</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <meta name="theme-color" content="#f5c518">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Plotline">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151d30;
+      --card-hover: #1c263f;
+      --accent: #f5c518;
+      --accent-hover: #e0b008;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #26334d;
+      --green: #10b981;
+      --green-dark: #059669;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navbar */
+    nav {
+      background: #111827;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 16px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tvtime-badge {
+      background: var(--accent);
+      color: #000;
+      font-weight: 900;
+      font-size: 18px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: -1px;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+    }
+    .nav-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-tab.active {
+      color: #000;
+      background: var(--accent);
+      font-weight: 700;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+    .lang-toggle-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .lang-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent);
+    }
+    .btn-settings {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .btn-settings:hover {
+      background: rgba(245, 197, 24, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Navbar Profile Dropdown */
+    .profile-dropdown-container {
+      position: relative;
+    }
+    .profile-pill-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .profile-pill-btn:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .profile-dropdown-menu {
+      position: absolute;
+      top: 48px;
+      right: 0;
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 210px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      padding: 8px;
+      display: none;
+      z-index: 200;
+    }
+    [dir="rtl"] .profile-dropdown-menu {
+      right: auto;
+      left: 0;
+    }
+    .profile-menu-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 6px 10px;
+      letter-spacing: 0.5px;
+    }
+    .profile-menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    [dir="rtl"] .profile-menu-item {
+      text-align: right;
+    }
+    .profile-menu-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .profile-menu-item.active {
+      color: var(--accent);
+      font-weight: 700;
+      background: rgba(245, 197, 24, 0.1);
+    }
+    .profile-menu-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Per-Tab Binge Banners */
+    .time-spent-banner {
+      background: linear-gradient(135deg, #182238 0%, #111827 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    .time-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .time-digits {
+      font-size: 30px;
+      font-weight: 800;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .time-digits strong {
+      color: var(--accent);
+      font-size: 34px;
+    }
+    .time-digits span {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-right: 8px;
+    }
+    [dir="rtl"] .time-digits span {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+    .quick-stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .qstat {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      min-width: 100px;
+    }
+    .qstat-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .qstat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Section Headers & Filter Bars */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .time-sync-pill {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-chip:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .filter-chip.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+    .search-input {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      flex: 1;
+      min-width: 240px;
+      transition: border 0.2s;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Grid Layouts */
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .show-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .show-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 197, 24, 0.4);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    .card-cover {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #1e293b;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .card-cover.poster-ratio {
+      aspect-ratio: 2 / 3;
+    }
+    .card-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s;
+    }
+    .show-card:hover .card-cover img {
+      transform: scale(1.03);
+    }
+    .card-network-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    [dir="rtl"] .card-network-badge {
+      left: auto;
+      right: 8px;
+    }
+    .anime-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--purple);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    [dir="rtl"] .anime-tag {
+      right: auto;
+      left: 8px;
+    }
+    .card-content {
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+    .card-progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .card-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+    .card-progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .card-next-ep {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-next-ep-code {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      direction: ltr;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+    .btn-quick-tick {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-quick-tick:hover {
+      background: var(--accent-hover);
+      transform: scale(1.02);
+    }
+    .btn-quick-tick:active {
+      transform: scale(0.98);
+    }
+
+    /* Buttons */
+    .btn-add {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-add:hover {
+      background: var(--accent-hover);
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-danger:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-content {
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 840px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.2s;
+    }
+    [dir="rtl"] .modal-close-btn {
+      right: auto;
+      left: 16px;
+    }
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Settings Modal Split Layout */
+    .settings-modal-content {
+      max-width: 900px;
+      display: flex;
+      height: 600px;
+      overflow: hidden;
+    }
+    .settings-sidebar {
+      width: 220px;
+      background: #0d121f;
+      border-right: 1px solid var(--border);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    [dir="rtl"] .settings-sidebar {
+      border-right: none;
+      border-left: 1px solid var(--border);
+    }
+    .settings-nav-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    [dir="rtl"] .settings-nav-item {
+      text-align: right;
+    }
+    .settings-nav-item:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .settings-nav-item.active {
+      color: #000;
+      background: var(--accent);
+      font-weight: 700;
+    }
+    .settings-body {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .settings-pane {
+      display: none;
+    }
+    .settings-pane.active {
+      display: block;
+    }
+    .settings-pane h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+    .settings-pane p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* Profile Manage UI */
+    .profile-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .profile-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+    .profile-card.active-profile {
+      border-color: var(--accent);
+      background: rgba(245, 197, 24, 0.05);
+    }
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .profile-avatar-large {
+      font-size: 32px;
+      background: rgba(255,255,255,0.06);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-card-name {
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .profile-badge-active {
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .profile-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    /* Emoji Picker */
+    .emoji-picker-row {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0 16px;
+      flex-wrap: wrap;
+    }
+    .emoji-opt {
+      font-size: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .emoji-opt:hover, .emoji-opt.selected {
+      border-color: var(--accent);
+      background: rgba(245, 197, 24, 0.2);
+    }
+
+    /* Simplified Language Buttons in Settings */
+    .lang-btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .lang-big-btn {
+      flex: 1;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .lang-big-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--accent);
+    }
+    .lang-big-btn.active {
+      border-color: var(--accent);
+      background: rgba(245, 197, 24, 0.12);
+      color: var(--accent);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      background: #0b0f19;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Radio Mode Cards */
+    .mode-radio-group {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .mode-radio-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-radio-card.active {
+      border-color: var(--accent);
+      background: rgba(245, 197, 24, 0.08);
+    }
+
+    /* Discover Hero */
+    .discover-hero {
+      background: linear-gradient(135deg, #182238 0%, #111827 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .discover-search-box {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    /* Badges & Stats */
+    .stats-grid-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .detail-stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .stat-icon-wrap {
+      font-size: 26px;
+      background: rgba(255, 255, 255, 0.05);
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .badge-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .badge-card.unlocked {
+      border-color: rgba(245, 197, 24, 0.5);
+      background: linear-gradient(135deg, rgba(245, 197, 24, 0.08) 0%, var(--card-bg) 100%);
+    }
+    .badge-card.locked {
+      opacity: 0.6;
+    }
+    .badge-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge-icon {
+      font-size: 30px;
+    }
+    .badge-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .badge-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .badge-progress-wrap {
+      margin-top: auto;
+    }
+    .badge-progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .badge-progress-fill {
+      height: 100%;
+      background: var(--accent);
+    }
+    .badge-status-tag {
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    /* Plotline Wrapped Card */
+    .wrapped-box {
+      margin-top: 36px;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      border: 1px solid rgba(245, 197, 24, 0.3);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+    }
+
+    /* Show Modal Episode Row */
+    .episodes-list {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .episode-row {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+    .episode-row.watched {
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.04);
+    }
+    .ep-info {
+      flex: 1;
+    }
+    .ep-code {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-right: 6px;
+      direction: ltr;
+      display: inline-block;
+    }
+    [dir="rtl"] .ep-code {
+      margin-right: 0;
+      margin-left: 6px;
+    }
+    .ep-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .ep-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .ep-reaction-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .reaction-emoji-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .reaction-emoji-btn:hover, .reaction-emoji-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border);
+      transform: scale(1.15);
+    }
+    .ep-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ep-rewatch-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .ep-rewatch-box button {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 4px;
+    }
+    .ep-check-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .ep-check-btn.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    /* Seasons tab row in modal */
+    .seasons-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .season-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .season-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Scanner Table */
+    .scanner-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .scanner-table th, .scanner-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    [dir="rtl"] .scanner-table th, [dir="rtl"] .scanner-table td {
+      text-align: right;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 12px;
+      }
+      .brand-title {
+        display: none;
+      }
+      .settings-modal-content {
+        flex-direction: column;
+        height: 90vh;
+      }
+      .settings-sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .time-spent-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .discover-search-box {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav>
+    <div class="nav-brand" onclick="switchTab('towatch')">
+      <div class="tvtime-badge">PL</div>
+      <div class="brand-title">Plotline</div>
+    </div>
+    
+    <div class="nav-tabs">
+      <button class="nav-tab active" id="tab-btn-towatch" onclick="switchTab('towatch')" data-i18n="tab_towatch">📺 To Watch</button>
+      <button class="nav-tab" id="tab-btn-series" onclick="switchTab('series')" data-i18n="tab_series">🎬 Shows</button>
+      <button class="nav-tab" id="tab-btn-movies" onclick="switchTab('movies')" data-i18n="tab_movies">🍿 Movies</button>
+      <button class="nav-tab" id="tab-btn-calendar" onclick="switchTab('calendar')" data-i18n="tab_calendar">📅 Upcoming</button>
+      <button class="nav-tab" id="tab-btn-stats" onclick="switchTab('stats')" data-i18n="tab_stats">📊 Stats & Badges</button>
+      <button class="nav-tab" id="tab-btn-discover" onclick="switchTab('discover')" data-i18n="tab_discover">🔍 Discover</button>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Multi-Profile Switcher Dropdown -->
+      <div class="profile-dropdown-container">
+        <button class="profile-pill-btn" id="nav-profile-btn" onclick="toggleProfileDropdown()">
+          <span id="nav-profile-avatar">👑</span>
+          <span id="nav-profile-name">Dororo</span>
+          <span style="font-size: 10px; opacity: 0.7;">▼</span>
+        </button>
+        <div class="profile-dropdown-menu" id="nav-profile-menu">
+          <div class="profile-menu-header" data-i18n="profiles_title">Switch Profile</div>
+          <div id="profile-dropdown-list">
+            <!-- Populated by JS -->
+          </div>
+          <div class="profile-menu-divider"></div>
+          <button class="profile-menu-item" onclick="openSettingsModal('profiles')">
+            <span>⚙️ <span data-i18n="manage_profiles">Manage Profiles</span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Language Switcher: EN / FA -->
+      <button class="lang-toggle-btn" id="lang-toggle-btn" onclick="toggleLanguage()" title="Switch Language">
+        🌐 <span id="current-lang-label">EN</span>
+      </button>
+
+      <!-- Settings Button (Gear Icon) -->
+      <button class="btn-settings" onclick="openSettingsModal('profiles')" title="Settings">
+        ⚙️
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- 1. TAB: TO WATCH (Clean, zero clutter - no binge banner) -->
+    <section id="tab-towatch">
+      <div class="section-header">
+        <div class="section-title" data-i18n="tab_towatch">📺 To Watch</div>
+      </div>
+      <div class="shows-grid" id="towatch-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 2. TAB: SERIES (Shows dedicated Series Binge Banner) -->
+    <section id="tab-series" style="display: none;">
+      <!-- Series Binge Banner -->
+      <div class="time-spent-banner" id="series-binge-banner">
+        <div>
+          <div class="time-title" data-i18n="series_binge_title">🎬 Series Binge Time (Active Profile)</div>
+          <div class="time-digits">
+            <strong id="sb-months">0</strong> <span data-i18n="months">months</span>
+            <strong id="sb-days">0</strong> <span data-i18n="days">days</span>
+            <strong id="sb-hours">0</strong> <span data-i18n="hours">hours</span>
+            <strong id="sb-mins">0</strong> <span data-i18n="mins">mins</span>
+          </div>
+        </div>
+        <div class="quick-stats">
+          <div class="qstat">
+            <div class="qstat-val" id="sb-watched-eps">0</div>
+            <div class="qstat-label" data-i18n="stat_watched_eps">Episodes Watched</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val" id="sb-total-shows">0</div>
+            <div class="qstat-label" data-i18n="stat_shows_tracked">Shows Tracked</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val" id="sb-rewatches">0</div>
+            <div class="qstat-label" data-i18n="stat_rewatches">Rewatches</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title" data-i18n="tab_series">🎬 Shows</div>
+      </div>
+      <div class="filter-bar">
+        <input type="text" class="search-input" id="series-search" placeholder="Search tracked shows..." data-i18n-ph="search_shows_ph">
+        <button class="filter-chip active" onclick="filterSeries('all', this)" data-i18n="filter_all">All</button>
+        <button class="filter-chip" onclick="filterSeries('watching', this)" data-i18n="filter_watching">Watching</button>
+        <button class="filter-chip" onclick="filterSeries('uptodate', this)" data-i18n="filter_uptodate">Up to Date</button>
+      </div>
+      <div class="shows-grid" id="series-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 3. TAB: MOVIES (Shows dedicated Movies Binge Banner) -->
+    <section id="tab-movies" style="display: none;">
+      <!-- Movies Binge Banner -->
+      <div class="time-spent-banner" id="movies-binge-banner">
+        <div>
+          <div class="time-title" data-i18n="movies_binge_title">🍿 Movies Binge Time (Active Profile)</div>
+          <div class="time-digits">
+            <strong id="mb-months">0</strong> <span data-i18n="months">months</span>
+            <strong id="mb-days">0</strong> <span data-i18n="days">days</span>
+            <strong id="mb-hours">0</strong> <span data-i18n="hours">hours</span>
+            <strong id="mb-mins">0</strong> <span data-i18n="mins">mins</span>
+          </div>
+        </div>
+        <div class="quick-stats">
+          <div class="qstat">
+            <div class="qstat-val" id="mb-watched">0</div>
+            <div class="qstat-label" data-i18n="stat_watched_movies">Movies Watched</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val" id="mb-total">0</div>
+            <div class="qstat-label" data-i18n="stat_movies_total">Total Movies</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val" id="mb-rewatches">0</div>
+            <div class="qstat-label" data-i18n="stat_rewatches">Rewatches</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title" data-i18n="tab_movies">🍿 Movies</div>
+        <button class="btn-add" onclick="switchTab('discover')">+ Discover Movies</button>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" id="movie-filter-all" onclick="filterMovies('all', this)" data-i18n="filter_all">All</button>
+        <button class="filter-chip" id="movie-filter-watched" onclick="filterMovies('watched', this)" data-i18n="btn_mark_watched">Watched</button>
+        <button class="filter-chip" id="movie-filter-watchlist" onclick="filterMovies('watchlist', this)" data-i18n="btn_add_watchlist">Watchlist</button>
+      </div>
+      <div class="shows-grid" id="movies-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 4. TAB: CALENDAR (Strict Future Air Schedule) -->
+    <section id="tab-calendar" style="display: none;">
+      <div class="section-header">
+        <div class="section-title">
+          <span data-i18n="tab_calendar">📅 Upcoming Episodes & Movies Schedule</span>
+          <span id="calendar-time-sync" class="time-sync-pill">🕒 Synced</span>
+        </div>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;" data-i18n="calendar_future_note">
+        Strictly showing unreleased future episodes and movies. Once aired, titles automatically transition to your "To Watch" feed.
+      </p>
+      <div class="shows-grid" id="calendar-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 5. TAB: STATS & BADGES (Master Combined Binge Banner + All Badges) -->
+    <section id="tab-stats" style="display: none;">
+      <!-- Master Combined Binge Banner -->
+      <div class="time-spent-banner" id="master-binge-banner">
+        <div>
+          <div class="time-title" data-i18n="banner_title">Total Watch Time (Series + Movies Combined)</div>
+          <div class="time-digits">
+            <strong id="b-months">0</strong> <span data-i18n="months">months</span>
+            <strong id="b-days">0</strong> <span data-i18n="days">days</span>
+            <strong id="b-hours">0</strong> <span data-i18n="hours">hours</span>
+            <strong id="b-mins">0</strong> <span data-i18n="mins">mins</span>
+          </div>
+        </div>
+        <div class="quick-stats">
+          <div class="qstat">
+            <div class="qstat-val" id="b-total-eps">0</div>
+            <div class="qstat-label" data-i18n="stat_watched_eps">Episodes Watched</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val" id="b-total-movies">0</div>
+            <div class="qstat-label" data-i18n="stat_watched_movies">Movies Watched</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val" id="b-total-shows">0</div>
+            <div class="qstat-label" data-i18n="stat_shows_tracked">Shows Tracked</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title" data-i18n="tab_stats">📊 Stats & Badges</div>
+      </div>
+      <div class="stats-grid-details">
+        <div class="detail-stat-card">
+          <div class="stat-icon-wrap">📺</div>
+          <div>
+            <div class="qstat-val" id="stat-series-hours">0</div>
+            <div class="qstat-label" data-i18n="stat_series_hours">Hours of Shows</div>
+          </div>
+        </div>
+        <div class="detail-stat-card">
+          <div class="stat-icon-wrap">🍿</div>
+          <div>
+            <div class="qstat-val" id="stat-movies-hours">0</div>
+            <div class="qstat-label" data-i18n="stat_movies_hours">Hours of Movies</div>
+          </div>
+        </div>
+        <div class="detail-stat-card">
+          <div class="stat-icon-wrap">🔁</div>
+          <div>
+            <div class="qstat-val" id="stat-total-rewatches">0</div>
+            <div class="qstat-label" data-i18n="stat_rewatches">Total Rewatches</div>
+          </div>
+        </div>
+        <div class="detail-stat-card">
+          <div class="stat-icon-wrap">⏱️</div>
+          <div>
+            <div class="qstat-val" id="stat-avg-ep-time">45 mins</div>
+            <div class="qstat-label" data-i18n="stat_avg_ep">Avg Episode Length</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges Section -->
+      <div style="margin-top: 36px;">
+        <div class="section-title" style="margin-bottom: 8px;" data-i18n="badges_title">🏆 Achievement Badges & Milestones</div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;" data-i18n="badges_desc">
+          Unlock badges as you log episodes, movies, and rewatches for your active profile.
+        </p>
+        <div class="badges-grid" id="badges-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Plotline Wrapped Infographic Generator -->
+      <div class="wrapped-box">
+        <div style="display: inline-block; background: var(--accent); color: #000; font-weight: 900; font-size: 13px; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 1px;">
+          PLOTLINE WRAPPED
+        </div>
+        <h2 style="font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px;" data-i18n="wrapped_title">Plotline Wrapped — Your Personal Watch Card</h2>
+        <p style="font-size: 14px; color: #94a3b8; margin-bottom: 24px;" data-i18n="wrapped_desc">
+          Generate an infographic card with your total watch time, top shows, and unlocked badges for social sharing.
+        </p>
+        <button class="btn-add" style="background: var(--accent); color: #000; font-weight: 800; padding: 12px 28px; font-size: 15px; margin: 0 auto;" onclick="downloadWrappedCard()" data-i18n="wrapped_btn">
+          📥 Download Wrapped Card (High-Res PNG)
+        </button>
+        <canvas id="wrapped-canvas" width="1080" height="1350" style="display: none;"></canvas>
+      </div>
+    </section>
+
+    <!-- 6. TAB: DISCOVER & TRACK (100% focused on search & anime integration) -->
+    <section id="tab-discover" style="display: none;">
+      <div class="discover-hero">
+        <h2 style="font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 6px;" data-i18n="discover_title">🔍 Discover & Track Shows, Anime & Movies</h2>
+        <p style="font-size: 13px; color: var(--text-muted);" data-i18n="discover_desc">Search any TV series, anime (MyAnimeList / Jikan), or movie worldwide. One click adds all official seasons, episodes, and artwork automatically.</p>
+
+        <div class="discover-search-box">
+          <input type="text" id="discover-search-input" class="search-input" placeholder="Search TV shows, anime, movies (e.g. Breaking Bad, Arcane, Attack on Titan, Dune)..." data-i18n-ph="discover_search_ph" style="font-size: 15px; padding: 12px 18px;">
+          <button class="btn-add" onclick="performDiscoverSearch()" style="min-width: 120px; justify-content: center;" data-i18n="btn_search">
+            Search
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button class="filter-chip active" id="discover-type-all" onclick="setDiscoverType('all', this)" data-i18n="filter_all">✨ All</button>
+          <button class="filter-chip" id="discover-type-shows" onclick="setDiscoverType('shows', this)" data-i18n="filter_shows">📺 TV Shows & Anime</button>
+          <button class="filter-chip" id="discover-type-movies" onclick="setDiscoverType('movies', this)" data-i18n="filter_movies">🍿 Movies</button>
+        </div>
+
+        <div id="discover-search-status" style="display: none; font-size: 13px; color: var(--accent); margin-top: 14px;"></div>
+      </div>
+
+      <!-- Heading for Results / Featured -->
+      <div class="section-header">
+        <div class="section-title" id="discover-section-heading" data-i18n="featured_heading">🔥 Popular & Trending Titles</div>
+      </div>
+
+      <!-- Discover Cards Grid -->
+      <div class="shows-grid" id="discover-results-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Collapsed Accordion for Custom Manual Creation -->
+      <details style="margin-top: 36px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+        <summary style="cursor: pointer; font-weight: 700; color: var(--accent);" data-i18n="manual_accordion">➕ Can't find your title? Add custom entry manually (unlisted / home video)</summary>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px;">
+          <!-- Manual Movie Form -->
+          <div style="flex: 1; min-width: 280px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+            <h4 style="color: var(--accent); margin-bottom: 12px;">🍿 Add Custom Movie</h4>
+            <div class="form-group">
+              <label>Movie Title</label>
+              <input type="text" id="add-m-title" placeholder="e.g. My Home Video">
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <div class="form-group" style="flex: 1;">
+                <label>Year</label>
+                <input type="number" id="add-m-year" value="2024">
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label>Runtime (min)</label>
+                <input type="number" id="add-m-runtime" value="120">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="add-m-status">
+                <option value="Plan to Watch">Plan to Watch</option>
+                <option value="Watched">Watched</option>
+              </select>
+            </div>
+            <button class="btn-add" onclick="submitNewMovie()">Add Custom Movie</button>
+          </div>
+
+          <!-- Manual Show Form -->
+          <div style="flex: 1; min-width: 280px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+            <h4 style="color: var(--accent); margin-bottom: 12px;">🎬 Add Custom Show</h4>
+            <div class="form-group">
+              <label>Show Title</label>
+              <input type="text" id="add-s-title" placeholder="e.g. Web Series">
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <div class="form-group" style="flex: 1;">
+                <label>Seasons</label>
+                <input type="number" id="add-s-seasons" value="1">
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label>Episodes / Season</label>
+                <input type="number" id="add-s-eps" value="10">
+              </div>
+            </div>
+            <button class="btn-add" onclick="submitNewShow()">Add Custom Show</button>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <!-- DEDICATED SETTINGS MODAL (⚙️) -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-content settings-modal-content">
+      <button class="modal-close-btn" onclick="closeSettingsModal()">✕</button>
+      
+      <!-- Settings Sidebar -->
+      <div class="settings-sidebar">
+        <div style="font-size: 15px; font-weight: 800; color: var(--accent); padding: 8px 12px 14px; border-bottom: 1px solid var(--border); margin-bottom: 8px;" data-i18n="settings_title">
+          ⚙️ Settings
+        </div>
+        <button class="settings-nav-item active" onclick="switchSettingsTab('profiles', this)" data-i18n="settings_tab_profiles">
+          👤 Profiles
+        </button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('lang', this)" data-i18n="settings_tab_lang">
+          🌐 Language
+        </button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('db', this)" data-i18n="settings_tab_db">
+          💾 Database & Offline
+        </button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('scanner', this)" data-i18n="settings_tab_scanner">
+          📁 Media Scanner
+        </button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('migration', this)" data-i18n="settings_tab_migration">
+          🔄 Migration Hub
+        </button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('backup', this)" data-i18n="settings_tab_backup">
+          📦 Backup & Export
+        </button>
+        <button class="settings-nav-item" onclick="switchSettingsTab('scrobble', this)" data-i18n="settings_tab_scrobble">
+          📡 Scrobbler Webhook
+        </button>
+      </div>
+
+      <!-- Settings Body -->
+      <div class="settings-body">
+        <!-- 1. Profiles Pane (Multi-User Engine) -->
+        <div class="settings-pane active" id="spane-profiles">
+          <h3 data-i18n="profiles_title">👤 Multi-Profile Management</h3>
+          <p data-i18n="profiles_desc">Manage multiple user profiles on this system (like Netflix). Each profile maintains its own watch status, rewatch counts, and badges without duplicating library files.</p>
+          
+          <div class="profile-list-grid" id="profile-management-list">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Add New Profile Box -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-top: 18px;">
+            <h4 style="color: var(--accent); margin-bottom: 10px;" data-i18n="add_new_profile">+ Add New Profile</h4>
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+              <input type="text" id="new-profile-name" class="search-input" placeholder="Profile name (e.g. Dororo, Sarah, Kids)..." data-i18n-ph="profile_name_ph">
+            </div>
+            <label style="font-size: 12px; color: var(--text-muted);" data-i18n="choose_avatar">Choose Avatar Emoji:</label>
+            <div class="emoji-picker-row" id="avatar-emoji-picker">
+              <button class="emoji-opt selected" onclick="selectEmoji('👑', this)">👑</button>
+              <button class="emoji-opt" onclick="selectEmoji('👤', this)">👤</button>
+              <button class="emoji-opt" onclick="selectEmoji('🍿', this)">🍿</button>
+              <button class="emoji-opt" onclick="selectEmoji('🎬', this)">🎬</button>
+              <button class="emoji-opt" onclick="selectEmoji('🚀', this)">🚀</button>
+              <button class="emoji-opt" onclick="selectEmoji('🐱', this)">🐱</button>
+              <button class="emoji-opt" onclick="selectEmoji('🦊', this)">🦊</button>
+              <button class="emoji-opt" onclick="selectEmoji('⚡', this)">⚡</button>
+              <button class="emoji-opt" onclick="selectEmoji('🎮', this)">🎮</button>
+              <button class="emoji-opt" onclick="selectEmoji('💎', this)">💎</button>
+            </div>
+            <button class="btn-add" onclick="createProfile()" data-i18n="btn_create_profile">Create Profile</button>
+            <span id="create-profile-status" style="margin-left: 12px; font-size: 13px; color: var(--green);"></span>
+          </div>
+        </div>
+
+        <!-- 2. Language Pane (Streamlined: clean English & Persian buttons) -->
+        <div class="settings-pane" id="spane-lang">
+          <h3 data-i18n="settings_tab_lang">🌐 Language</h3>
+          <div class="lang-btn-group">
+            <button class="lang-big-btn" id="lang-btn-en" onclick="setLanguage('en')">
+              <span style="font-size: 26px;">🇬🇧</span>
+              <span>English (Default — LTR)</span>
+            </button>
+            <button class="lang-big-btn" id="lang-btn-fa" onclick="setLanguage('fa')">
+              <span style="font-size: 26px;">🇮🇷</span>
+              <span>فارسی (Persian — RTL)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Database & Offline Pane (With download size calculation preview) -->
+        <div class="settings-pane" id="spane-db">
+          <h3 data-i18n="settings_tab_db">💾 Database & Offline Engine</h3>
+          <p>Configure storage locations, server connection URI, and toggle between online image streaming and 100% offline local caching.</p>
+
+          <div class="form-group">
+            <label data-i18n="db_location">Database File / Server Location:</label>
+            <input type="text" id="set-db-location" value="plotline.db" readonly style="opacity: 0.8;">
+          </div>
+
+          <div style="margin-top: 20px;">
+            <label style="font-weight: 700; font-size: 14px;" data-i18n="storage_mode_title">Image & Media Storage Mode:</label>
+            <div class="mode-radio-group">
+              <div class="mode-radio-card active" id="mode-card-stream" onclick="selectCacheMode('stream')">
+                <div style="font-weight: 700; font-size: 14px; color: var(--accent); margin-bottom: 4px;" data-i18n="mode_stream">🌐 Online Streaming (0 MB Disk)</div>
+                <div style="font-size: 12px; color: var(--text-muted);" data-i18n="mode_stream_desc">Stream posters directly from web servers. Zero disk space consumed on your machine.</div>
+              </div>
+              <div class="mode-radio-card" id="mode-card-download" onclick="selectCacheMode('download')">
+                <div style="font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 4px;" data-i18n="mode_offline">💾 Full Offline Caching</div>
+                <div style="font-size: 12px; color: var(--text-muted);" data-i18n="mode_offline_desc">Save all posters locally to disk for true air-gapped offline use.</div>
+              </div>
+            </div>
+
+            <!-- Download Size Preview & Offline Status -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 16px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <span data-i18n="storage_used">Current Disk Space Used:</span>
+                <strong id="storage-stats-display" style="color: var(--accent); margin-left: 6px;">0 MB (0 posters)</strong>
+              </div>
+              <div id="pending-download-info" style="font-size: 12.5px; color: var(--text-muted);">
+                <!-- e.g. ~8.2 MB pending -->
+              </div>
+            </div>
+
+            <button class="btn-add" id="btn-cache-all-posters" style="background: #374151; color: #fff; width: 100%; justify-content: center;" onclick="cacheAllPosters()">
+              📥 Download All Library Posters for 100% Offline Use
+            </button>
+            <div id="cache-all-status" style="font-size: 12px; color: var(--green); margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <!-- 4. Media Scanner Pane (Moved from Discover tab) -->
+        <div class="settings-pane" id="spane-scanner">
+          <h3 data-i18n="scanner_title">📁 Local Video Folder Scanner</h3>
+          <p data-i18n="scanner_desc">Scan local folders on your computer or NAS (e.g. D:\Movies) to discover video files and add missing titles to your library.</p>
+          
+          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+            <input type="text" id="scanner-folder-input" class="search-input" placeholder="Folder path (e.g. D:\Movies or C:\Videos)..." data-i18n-ph="scanner_ph">
+            <button class="btn-add" onclick="scanLocalFolder()" style="min-width: 130px; justify-content: center;" data-i18n="btn_scan">
+              🔍 Scan Folder
+            </button>
+          </div>
+          <div id="scanner-status" style="font-size: 13px; color: var(--accent); margin-bottom: 12px; display: none;"></div>
+          <div id="scanner-results-container" style="overflow-x: auto; display: none;">
+            <table class="scanner-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Year</th>
+                  <th>File Size</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="scanner-results-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. Migration Hub Pane -->
+        <div class="settings-pane" id="spane-migration">
+          <h3 data-i18n="settings_tab_migration">🔄 Migration Hub</h3>
+          <p data-i18n="migration_desc">Import your existing watch history from other platforms in one click:</p>
+          
+          <div class="form-group">
+            <label data-i18n="migration_lb">Letterboxd watched.csv file:</label>
+            <input type="file" id="import-letterboxd-file" accept=".csv" onchange="handleLetterboxdUpload(event)">
+          </div>
+          <div class="form-group">
+            <label data-i18n="migration_trakt">Trakt.tv JSON history file:</label>
+            <input type="file" id="import-trakt-file" accept=".json" onchange="handleTraktUpload(event)">
+          </div>
+          <div class="form-group">
+            <label data-i18n="migration_tvtime">TV Time JSON backup or iOS export:</label>
+            <input type="file" id="import-tvtime-file" accept=".json" onchange="handleTVTimeUpload(event)">
+          </div>
+          <div id="migration-status" style="font-size: 13px; color: var(--green); margin-top: 10px;"></div>
+        </div>
+
+        <!-- 6. Backup & Export Pane -->
+        <div class="settings-pane" id="spane-backup">
+          <h3 data-i18n="settings_tab_backup">📦 Backup & Export</h3>
+          <p data-i18n="backup_desc">Download a full offline JSON archive containing all your shows, episodes, movies, notes, and profiles.</p>
+          <button class="btn-add" style="background: var(--blue); color: #fff;" onclick="downloadBackup()" data-i18n="btn_download_backup">
+            📥 Download Full Database Backup (JSON)
+          </button>
+        </div>
+
+        <!-- 7. Scrobbler Webhook Pane -->
+        <div class="settings-pane" id="spane-scrobble">
+          <h3 data-i18n="settings_tab_scrobble">📡 Media Server Scrobbler (Jellyfin & Plex)</h3>
+          <p data-i18n="scrobble_desc">Automatically check off episodes and movies when played on your home server (Jellyfin, Plex, Emby):</p>
+          
+          <div class="form-group">
+            <label data-i18n="webhook_url">Webhook URL:</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="webhook-url-input" readonly value="http://localhost:8765/api/scrobble/webhook">
+              <button class="btn-add" onclick="copyWebhookUrl()" style="white-space: nowrap;" data-i18n="btn_copy">Copy URL</button>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong>Jellyfin Setup:</strong> In Jellyfin Dashboard > Plugins > Webhook, add a generic webhook pointing to this URL. Select <em>Playback Stop</em> notification.<br><br>
+            <strong>Plex Setup:</strong> In Plex Settings > Webhooks, add this URL. Plotline automatically checks off episodes and increments rewatch counts upon playback completion.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOW DETAILS MODAL (Seasons & Episodes) -->
+  <div class="modal-overlay" id="show-modal">
+    <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      
+      <div style="position: relative; height: 180px; overflow: hidden;">
+        <img id="modal-banner-img" src="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6);" alt="Show Banner">
+        <div style="position: absolute; bottom: 16px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+          <div>
+            <div id="modal-network" class="card-network-badge" style="position: static; display: inline-block; margin-bottom: 6px;"></div>
+            <h2 id="modal-title" style="font-size: 24px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);"></h2>
+          </div>
+          <div id="modal-progress-badge" style="background: rgba(0,0,0,0.8); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;"></div>
+        </div>
+      </div>
+
+      <!-- Seasons Navbar -->
+      <div class="seasons-nav" id="modal-seasons-nav">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Season Action Bar -->
+      <div style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.01);">
+        <span id="season-info-text" style="font-size: 13px; font-weight: 700; color: var(--accent);"></span>
+        <button class="btn-add" style="padding: 6px 12px; font-size: 12px;" onclick="toggleSeasonAll()" data-i18n="mark_season_all">
+          ✓ Mark Whole Season Watched
+        </button>
+      </div>
+
+      <!-- Episodes List -->
+      <div class="episodes-list" id="modal-episodes-list">
+        <!-- Episode rows rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------------------------------
+    // I18N DICTIONARY & LANGUAGE ENGINE
+    // ----------------------------------------------------
+    const I18N = {
+      en: {
+        app_title: "Plotline",
+        brand_sub: "Offline & Self-Hosted Media Tracker",
+        tab_towatch: "📺 To Watch",
+        tab_series: "🎬 Shows",
+        tab_movies: "🍿 Movies",
+        tab_calendar: "📅 Upcoming",
+        tab_stats: "📊 Stats & Badges",
+        tab_discover: "🔍 Discover",
+        banner_title: "Total Watch Time (Series + Movies Combined)",
+        series_binge_title: "🎬 Series Binge Time (Active Profile)",
+        movies_binge_title: "🍿 Movies Binge Time (Active Profile)",
+        months: "months",
+        days: "days",
+        hours: "hours",
+        mins: "mins",
+        stat_watched_eps: "Episodes Watched",
+        stat_watched_movies: "Movies Watched",
+        stat_shows_tracked: "Shows Tracked",
+        stat_movies_total: "Total Movies",
+        stat_series_hours: "Hours of Shows",
+        stat_movies_hours: "Hours of Movies",
+        stat_rewatches: "Total Rewatches",
+        stat_avg_ep: "Avg Episode Length",
+        filter_all: "All",
+        filter_watching: "Watching",
+        filter_uptodate: "Up to Date",
+        search_shows_ph: "Search tracked shows...",
+        to_watch_empty: "You're all caught up! No upcoming unwatched episodes.",
+        next_ep: "Next episode:",
+        quick_tick: "✓ Mark Watched",
+        season: "Season",
+        episode: "Episode",
+        mark_season_all: "✓ Mark Whole Season Watched",
+        rewatch_btn: "Rewatch",
+        notes_placeholder: "Write your thoughts or private diary note here...",
+        save_note: "Save Note",
+        badges_title: "🏆 Achievement Badges & Milestones",
+        badges_desc: "Unlock custom badges as you log episodes, movies, and rewatches for your active profile.",
+        wrapped_title: "Plotline Wrapped — Your Personal Watch Card",
+        wrapped_desc: "Generate an infographic card with your total watch time, top shows, and unlocked badges for social sharing.",
+        wrapped_btn: "📥 Download Wrapped Card (High-Res PNG)",
+        discover_title: "🔍 Discover & Track Shows, Anime & Movies",
+        discover_desc: "Search any TV series, anime (MyAnimeList / Jikan), or movie worldwide. One click adds all official seasons, episodes, and artwork automatically.",
+        discover_search_ph: "Search TV shows, anime, movies (e.g. Breaking Bad, Arcane, Attack on Titan, Dune)...",
+        filter_shows: "📺 TV Shows & Anime",
+        filter_movies: "🍿 Movies",
+        btn_search: "Search",
+        btn_add_show: "+ Track Show",
+        btn_add_watchlist: "🍿 Watchlist",
+        btn_mark_watched: "✓ Watched",
+        btn_in_library: "✓ In Library",
+        featured_heading: "🔥 Popular & Trending Titles",
+        manual_accordion: "➕ Can't find your title? Add custom entry manually (unlisted / home video)",
+        settings_title: "⚙️ Settings",
+        settings_tab_profiles: "👤 Profiles",
+        settings_tab_lang: "🌐 Language",
+        settings_tab_db: "💾 Database & Offline",
+        settings_tab_scanner: "📁 Media Scanner",
+        settings_tab_migration: "🔄 Migration Hub",
+        settings_tab_backup: "📦 Backup & Export",
+        settings_tab_scrobble: "📡 Scrobbler Webhook",
+        profiles_title: "👤 Multi-Profile Management",
+        profiles_desc: "Manage multiple user profiles on this system (like Netflix). Each profile maintains its own watch status, rewatch counts, and badges without duplicating library files.",
+        add_new_profile: "+ Add New Profile",
+        profile_name_ph: "Profile name (e.g. Dororo, Sarah, Kids)...",
+        choose_avatar: "Choose Avatar Emoji:",
+        btn_create_profile: "Create Profile",
+        manage_profiles: "Manage Profiles",
+        calendar_future_note: "Strictly showing unreleased future episodes and movies. Once aired, titles automatically transition to your 'To Watch' feed.",
+        storage_mode_title: "Image & Media Storage Mode:",
+        mode_stream: "🌐 Online Streaming (0 MB Disk)",
+        mode_stream_desc: "Stream posters directly from web servers. Zero disk space consumed on your machine.",
+        mode_offline: "💾 Full Offline Caching",
+        mode_offline_desc: "Save all posters locally to disk for true air-gapped offline use.",
+        storage_used: "Current Disk Space Used:",
+        db_location: "Database File / Server Location:",
+        migration_desc: "Import your existing watch history from other platforms in one click:",
+        migration_lb: "Letterboxd watched.csv file:",
+        migration_trakt: "Trakt.tv JSON history file:",
+        migration_tvtime: "TV Time JSON backup or iOS export:",
+        backup_desc: "Download a full offline JSON archive containing all your shows, episodes, movies, notes, and profiles.",
+        btn_download_backup: "📥 Download Full Database Backup (JSON)",
+        scrobble_desc: "Automatically check off episodes and movies when played on your home server (Jellyfin, Plex, Emby):",
+        webhook_url: "Webhook URL:",
+        btn_copy: "Copy URL",
+        scanner_title: "📁 Local Video Folder Scanner",
+        scanner_desc: "Scan local folders on your computer or NAS (e.g. D:\\Movies) to discover video files and add missing titles to your library.",
+        scanner_ph: "Folder path (e.g. D:\\Movies or C:\\Videos)...",
+        btn_scan: "🔍 Scan Folder"
+      },
+      fa: {
+        app_title: "پلات‌لاین (Plotline)",
+        brand_sub: "ردیاب آفلاین و بدون وابستگی فیلم، انیمه و سریال",
+        tab_towatch: "📺 برای تماشا",
+        tab_series: "🎬 سریال‌ها",
+        tab_movies: "🍿 فیلم‌ها",
+        tab_calendar: "📅 تقویم پخش",
+        tab_stats: "📊 زمان کل و مدال‌ها",
+        tab_discover: "🔍 کاوش و افزودن",
+        banner_title: "زمان کل تماشا (تجمیعی سریال‌ها و فیلم‌ها)",
+        series_binge_title: "🎬 زمان تماشای سریال‌ها (پروفایل فعال)",
+        movies_binge_title: "🍿 زمان تماشای فیلم‌ها (پروفایل فعال)",
+        months: "ماه",
+        days: "روز",
+        hours: "ساعت",
+        mins: "دقیقه",
+        stat_watched_eps: "قسمت‌های دیده‌شده",
+        stat_watched_movies: "فیلم‌های دیده‌شده",
+        stat_shows_tracked: "سریال‌های فعال",
+        stat_movies_total: "کل فیلم‌ها",
+        stat_series_hours: "ساعت تماشای سریال",
+        stat_movies_hours: "ساعت تماشای فیلم",
+        stat_rewatches: "تعداد بازبینی‌ها",
+        stat_avg_ep: "میانگین طول هر قسمت",
+        filter_all: "همه",
+        filter_watching: "در حال تماشا",
+        filter_uptodate: "به‌روز شده",
+        search_shows_ph: "جستجو در بین سریال‌ها...",
+        to_watch_empty: "همه سریال‌هایتان به‌روز هستند! هیچ قسمت در حال تماشایی وجود ندارد.",
+        next_ep: "قسمت بعدی:",
+        quick_tick: "✓ تیک زدن",
+        season: "فصل",
+        episode: "قسمت",
+        mark_season_all: "✓ تیک زدن همه قسمت‌های این فصل",
+        rewatch_btn: "بازبینی",
+        notes_placeholder: "یادداشت یا تحلیل شخصی خود را اینجا بنویسید...",
+        save_note: "ذخیره یادداشت",
+        badges_title: "🏆 مدال‌ها و دستاوردهای تماشا",
+        badges_desc: "با تماشای قسمت‌ها، فیلم‌ها و بازبینی‌ها، نشان‌های افتخار پروفایل خود را آزاد کنید.",
+        wrapped_title: "کارنامه اختصاصی پلات‌لاین (Plotline Wrapped)",
+        wrapped_desc: "یک کارت گرافیکی شیک از کل زمان تماشا، سریال‌ها و بالاترین مدال‌ها برای استوری و اشتراک‌گذاری بسازید.",
+        wrapped_btn: "📥 دانلود کارت خلاصه آمار (PNG باکیفیت)",
+        discover_title: "🔍 کاوش آنلاین و افزودن سریال، انیمه و فیلم",
+        discover_desc: "نام هر فیلم، سریال یا انیمه‌ای را در دنیا جستجو کنید تا با یک کلیک تمامی فصل‌ها، قسمت‌ها و پوسترهای رسمی ثبت شوند.",
+        discover_search_ph: "نام سریال، انیمه یا فیلم را تایپ کنید (مثال: Breaking Bad, Arcane, Attack on Titan, Dune)...",
+        filter_shows: "📺 سریال‌ها و انیمه‌ها",
+        filter_movies: "🍿 فیلم‌های سینمایی",
+        btn_search: "جستجو",
+        btn_add_show: "+ پیگیری این سریال",
+        btn_add_watchlist: "🍿 واچ‌لیست",
+        btn_mark_watched: "✓ دیده‌ام",
+        btn_in_library: "✓ در آرشیو موجود است",
+        featured_heading: "🔥 عناوین محبوب و ترند جهان",
+        manual_accordion: "➕ عنوان مورد نظر را نیافتید؟ افزودن دستی فیلم یا سریال سفارشی",
+        settings_title: "⚙️ تنظیمات",
+        settings_tab_profiles: "👤 پروفایل‌ها",
+        settings_tab_lang: "🌐 زبان",
+        settings_tab_db: "💾 دیتابیس و آفلاین",
+        settings_tab_scanner: "📁 اسکنر رسانه",
+        settings_tab_migration: "🔄 مرکز مهاجرت",
+        settings_tab_backup: "📦 نسخه پشتیبان",
+        settings_tab_scrobble: "📡 وب‌هوک سرور خانگی",
+        profiles_title: "👤 مدیریت چندکاربره (Multi-Profile)",
+        profiles_desc: "چندین پروفایل کاربری مستقل (مشابه نتفلیکس) بسازید. سابقه تماشا، تیک‌ها و مدال‌های هر شخص کاملاً مجزاست بدون اینکه فایل‌های فیلم‌ها دو بار ذخیره شوند.",
+        add_new_profile: "+ ایجاد پروفایل جدید",
+        profile_name_ph: "نام پروفایل (مثال: Dororo، سارا، کودکان)...",
+        choose_avatar: "انتخاب آیکون پروفایل:",
+        btn_create_profile: "ایجاد پروفایل",
+        manage_profiles: "مدیریت پروفایل‌ها",
+        calendar_future_note: "فقط عناوین آینده که هنوز پخش نشده‌اند نمایش داده می‌شوند. پس از تاریخ انتشار، عناوین به طور خودکار به فید «برای تماشا» منتقل می‌شوند.",
+        storage_mode_title: "شیوه ذخیره‌سازی تصاویر و پوسترها:",
+        mode_stream: "🌐 استریم آنلاین (۰ مگابایت فضای دیسک)",
+        mode_stream_desc: "پوسترها مستقیماً از وب بارگذاری می‌شوند. بدون اشغال فضای هارد سیستم شما.",
+        mode_offline: "💾 دانلود و کش آفلاین کامل",
+        mode_offline_desc: "تمامی پوسترها به صورت محلی در هارد ذخیره می‌شوند تا بدون نیاز به اینترنت کار کند.",
+        storage_used: "فضای مصرفی فعلی روی هارد:",
+        db_location: "مسیر فایل دیتابیس / سرور:",
+        migration_desc: "سوابق تماشای قبلی خود را از سایر سرویس‌ها با یک کلیک وارد کنید:",
+        migration_lb: "فایل watched.csv خروجی لترباکسد (Letterboxd):",
+        migration_trakt: "فایل جیسون (JSON) تاریخچه ترکت (Trakt):",
+        migration_tvtime: "فایل پشتیبان یا خروجی تی‌وی تایم (TV Time):",
+        backup_desc: "دانلود فایل کامل آفلاین شامل تمام سریال‌ها، قسمت‌ها، فیلم‌ها، یادداشت‌ها و پروفایل‌ها.",
+        btn_download_backup: "📥 دانلود بک‌آپ کامل دیتابیس (JSON)",
+        scrobble_desc: "هنگام تماشای فیلم در سرور شخصی (Jellyfin, Plex, Emby)، وضعیت تماشا خودکار تیک می‌خورد:",
+        webhook_url: "آدرس وب‌هوک:",
+        btn_copy: "کپی آدرس وب‌هوک",
+        scanner_title: "📁 اسکنر پوشه‌های ویدیویی سیستم",
+        scanner_desc: "پوشه‌های هارد یا سرور خود را اسکن کنید تا فایل‌های ویدیویی شناسایی شده و به آرشیو افزوده شوند.",
+        scanner_ph: "مسیر پوشه (مثلاً D:\\Movies یا C:\\Videos)...",
+        btn_scan: "🔍 اسکن پوشه"
+      }
+    };
+
+    let currentLang = localStorage.getItem('plotline_lang') || 'en';
+    let selectedAvatarEmoji = '👑';
+
+    function t(key) {
+      if (I18N[currentLang] && I18N[currentLang][key]) {
+        return I18N[currentLang][key];
+      }
+      return (I18N['en'] && I18N['en'][key]) ? I18N['en'][key] : key;
+    }
+
+    function formatNumber(num) {
+      if (num === null || num === undefined) return '0';
+      if (currentLang === 'fa') {
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return num.toString().replace(/\d/g, d => persianDigits[parseInt(d)]);
+      }
+      return num.toLocaleString('en-US');
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('plotline_lang', lang);
+      applyLanguage(lang);
+    }
+
+    function toggleLanguage() {
+      setLanguage(currentLang === 'en' ? 'fa' : 'en');
+    }
+
+    function applyLanguage(lang) {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'fa') ? 'rtl' : 'ltr';
+      
+      const langLabel = document.getElementById('current-lang-label');
+      if (langLabel) langLabel.textContent = (lang === 'fa') ? 'فا' : 'EN';
+
+      const btnEn = document.getElementById('lang-btn-en');
+      const btnFa = document.getElementById('lang-btn-fa');
+      if (btnEn && btnFa) {
+        if (lang === 'en') {
+          btnEn.classList.add('active');
+          btnFa.classList.remove('active');
+        } else {
+          btnFa.classList.add('active');
+          btnEn.classList.remove('active');
+        }
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+
+      document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        el.placeholder = t(key);
+      });
+
+      loadStats();
+      if (currentTab === 'towatch') renderToWatch();
+      if (currentTab === 'series') renderSeries();
+      if (currentTab === 'movies') renderMovies();
+      if (currentTab === 'calendar') loadCalendar();
+      if (currentTab === 'stats') loadBadges();
+      loadStorageStats();
+    }
+
+    // ----------------------------------------------------
+    // APP STATE & CORE DATA
+    // ----------------------------------------------------
+    let allShows = [];
+    let allMovies = [];
+    let allProfiles = [];
+    let activeProfileId = 1;
+    let currentShowDetails = null;
+    let selectedSeasonNum = 1;
+    let currentTab = 'towatch';
+    let currentBadges = [];
+    let discoverType = 'all';
+
+    // ----------------------------------------------------
+    // MULTI-PROFILE ENGINE
+    // ----------------------------------------------------
+    async function loadProfiles() {
+      try {
+        const res = await fetch('/api/profiles');
+        const data = await res.json();
+        allProfiles = data.profiles || [];
+        activeProfileId = data.active_id || 1;
+
+        const activeP = allProfiles.find(p => p.id === activeProfileId) || allProfiles[0] || { name: 'Dororo', avatar: '👑' };
+        
+        // Update navbar button
+        const navAv = document.getElementById('nav-profile-avatar');
+        const navNm = document.getElementById('nav-profile-name');
+        if (navAv) navAv.textContent = activeP.avatar || '👤';
+        if (navNm) navNm.textContent = activeP.name || 'User';
+
+        // Update navbar dropdown list
+        const dropList = document.getElementById('profile-dropdown-list');
+        if (dropList) {
+          dropList.innerHTML = '';
+          allProfiles.forEach(p => {
+            const btn = document.createElement('button');
+            const isActive = p.id === activeProfileId;
+            btn.className = `profile-menu-item ${isActive ? 'active' : ''}`;
+            btn.onclick = () => switchProfile(p.id);
+            btn.innerHTML = `
+              <span>${p.avatar || '👤'} ${p.name}</span>
+              ${isActive ? '<span>✓</span>' : ''}
+            `;
+            dropList.appendChild(btn);
+          });
+        }
+
+        // Update settings management pane
+        renderProfileManagementList();
+      } catch (e) {
+        console.error('Error loading profiles:', e);
+      }
+    }
+
+    function toggleProfileDropdown() {
+      const menu = document.getElementById('nav-profile-menu');
+      if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+      }
+    }
+
+    // Close profile dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const container = document.querySelector('.profile-dropdown-container');
+      const menu = document.getElementById('nav-profile-menu');
+      if (menu && container && !container.contains(e.target)) {
+        menu.style.display = 'none';
+      }
+    });
+
+    async function switchProfile(pid) {
+      try {
+        const res = await fetch('/api/profiles/switch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile_id: pid })
+        });
+        const d = await res.json();
+        if (d.success) {
+          const menu = document.getElementById('nav-profile-menu');
+          if (menu) menu.style.display = 'none';
+          await loadProfiles();
+          await loadStats();
+          await loadShows();
+          await loadMovies();
+          if (currentTab === 'calendar') await loadCalendar();
+          if (currentTab === 'stats') await loadBadges();
+        }
+      } catch (e) {
+        console.error('Error switching profile:', e);
+      }
+    }
+
+    function selectEmoji(emoji, btn) {
+      selectedAvatarEmoji = emoji;
+      document.querySelectorAll('.emoji-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    async function createProfile() {
+      const nameInput = document.getElementById('new-profile-name');
+      const name = nameInput.value.trim();
+      const status = document.getElementById('create-profile-status');
+      if (!name) {
+        alert('Please enter a profile name.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/profiles/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, avatar: selectedAvatarEmoji })
+        });
+        const d = await res.json();
+        if (d.success) {
+          nameInput.value = '';
+          status.textContent = '✓ Profile created!';
+          setTimeout(() => { status.textContent = ''; }, 2500);
+          await loadProfiles();
+        }
+      } catch (e) {
+        status.textContent = 'Error creating profile.';
+      }
+    }
+
+    async function deleteProfile(pid) {
+      if (allProfiles.length <= 1) {
+        alert('Cannot delete the last remaining profile.');
+        return;
+      }
+      if (!confirm('Are you sure you want to delete this profile? Its individual watch history will be removed.')) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/profiles/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile_id: pid })
+        });
+        const d = await res.json();
+        if (d.success) {
+          await loadProfiles();
+          await loadStats();
+          await loadShows();
+          await loadMovies();
+        }
+      } catch (e) {
+        console.error('Error deleting profile:', e);
+      }
+    }
+
+    function renderProfileManagementList() {
+      const container = document.getElementById('profile-management-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      allProfiles.forEach(p => {
+        const card = document.createElement('div');
+        const isActive = p.id === activeProfileId;
+        card.className = `profile-card ${isActive ? 'active-profile' : ''}`;
+        
+        card.innerHTML = `
+          <div class="profile-card-header">
+            <div class="profile-avatar-large">${p.avatar || '👤'}</div>
+            <div>
+              <div class="profile-card-name">${p.name}</div>
+              ${isActive ? '<div class="profile-badge-active">● Active Profile</div>' : '<div style="font-size: 11px; color: var(--text-muted);">Inactive</div>'}
+            </div>
+          </div>
+          <div class="profile-actions">
+            ${!isActive ? `<button class="btn-add" style="padding: 4px 10px; font-size: 12px;" onclick="switchProfile(${p.id})">Switch</button>` : ''}
+            ${allProfiles.length > 1 ? `<button class="btn-danger" onclick="deleteProfile(${p.id})">Delete</button>` : ''}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // ----------------------------------------------------
+    // STATS & PER-TAB BINGE BANNERS
+    // ----------------------------------------------------
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+
+        // 1. Series Tab Binge Banner
+        if (data.series_time) {
+          document.getElementById('sb-months').textContent = formatNumber(data.series_time.months);
+          document.getElementById('sb-days').textContent = formatNumber(data.series_time.days);
+          document.getElementById('sb-hours').textContent = formatNumber(data.series_time.hours);
+          document.getElementById('sb-mins').textContent = formatNumber(data.series_time.minutes);
+          document.getElementById('sb-watched-eps').textContent = formatNumber(data.watched_episodes);
+          document.getElementById('sb-total-shows').textContent = formatNumber(data.total_shows);
+          document.getElementById('sb-rewatches').textContent = formatNumber(data.episode_rewatches || 0);
+        }
+
+        // 2. Movies Tab Binge Banner
+        if (data.movies_time) {
+          document.getElementById('mb-months').textContent = formatNumber(data.movies_time.months);
+          document.getElementById('mb-days').textContent = formatNumber(data.movies_time.days);
+          document.getElementById('mb-hours').textContent = formatNumber(data.movies_time.hours);
+          document.getElementById('mb-mins').textContent = formatNumber(data.movies_time.minutes);
+          document.getElementById('mb-watched').textContent = formatNumber(data.watched_movies);
+          document.getElementById('mb-total').textContent = formatNumber(data.total_movies);
+          document.getElementById('mb-rewatches').textContent = formatNumber(data.movie_rewatches || 0);
+        }
+
+        // 3. Stats & Badges Master Combined Banner
+        document.getElementById('b-months').textContent = formatNumber(data.months);
+        document.getElementById('b-days').textContent = formatNumber(data.days);
+        document.getElementById('b-hours').textContent = formatNumber(data.hours);
+        document.getElementById('b-mins').textContent = formatNumber(data.minutes);
+        document.getElementById('b-total-eps').textContent = formatNumber(data.watched_episodes);
+        document.getElementById('b-total-movies').textContent = formatNumber(data.watched_movies);
+        document.getElementById('b-total-shows').textContent = formatNumber(data.total_shows);
+
+        const sHrs = Math.round((data.series_time?.total_minutes || 0) / 60);
+        const mHrs = Math.round((data.movies_time?.total_minutes || 0) / 60);
+        document.getElementById('stat-series-hours').textContent = formatNumber(sHrs);
+        document.getElementById('stat-movies-hours').textContent = formatNumber(mHrs);
+        document.getElementById('stat-total-rewatches').textContent = formatNumber((data.episode_rewatches || 0) + (data.movie_rewatches || 0));
+
+      } catch (e) {
+        console.error('Error loading stats:', e);
+      }
+    }
+
+    async function loadShows() {
+      try {
+        const res = await fetch('/api/shows');
+        allShows = await res.json();
+        renderToWatch();
+        renderSeries();
+      } catch (e) {
+        console.error('Error loading shows:', e);
+      }
+    }
+
+    async function loadMovies() {
+      try {
+        const res = await fetch('/api/movies');
+        allMovies = await res.json();
+        renderMovies();
+      } catch (e) {
+        console.error('Error loading movies:', e);
+      }
+    }
+
+    function switchTab(tab) {
+      if (tab === 'calendar') loadCalendar();
+      if (tab === 'stats') loadBadges();
+      if (tab === 'discover') loadDiscoverFeatured();
+      currentTab = tab;
+
+      ['towatch', 'series', 'movies', 'calendar', 'stats', 'discover'].forEach(t => {
+        const sec = document.getElementById('tab-' + t);
+        if (sec) sec.style.display = (t === tab) ? 'block' : 'none';
+        const btn = document.getElementById('tab-btn-' + t);
+        if (btn) {
+          if (t === tab) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+    }
+
+    // ----------------------------------------------------
+    // SHELF RENDERING (TO WATCH, SERIES, MOVIES)
+    // ----------------------------------------------------
+    function renderToWatch() {
+      const grid = document.getElementById('towatch-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      
+      const unwatchedShows = allShows.filter(s => s.next_episode);
+      if (unwatchedShows.length === 0) {
+        grid.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">${t('to_watch_empty')}</div>`;
+        return;
+      }
+
+      unwatchedShows.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'show-card';
+        const img = s.fanart_url || s.poster_url || 'https://via.placeholder.com/300x180?text=' + encodeURIComponent(s.title);
+        const ep = s.next_episode;
+        const pct = Math.min(100, Math.round(((s.watched_eps || 0) / (s.total_eps || 1)) * 100));
+
+        card.innerHTML = `
+          <div class="card-cover" onclick="openShowModal(${s.id})">
+            <img src="${img}" alt="${s.title}" loading="lazy">
+            <span class="card-network-badge">${s.network || 'TV'}</span>
+          </div>
+          <div class="card-content">
+            <div class="card-title" onclick="openShowModal(${s.id})">${s.title}</div>
+            <div class="card-progress-bar" onclick="openShowModal(${s.id})">
+              <div class="card-progress-fill" style="width: ${pct}%;"></div>
+            </div>
+            <div class="card-progress-text">
+              <span>${formatNumber(pct)}%</span>
+              <span>${formatNumber(s.watched_eps || 0)} / ${formatNumber(s.total_eps || 0)}</span>
+            </div>
+            <div class="card-next-ep">
+              <div>
+                <div style="color: var(--text-muted); font-size: 11px;">${t('next_ep')}</div>
+                <div class="card-next-ep-code">S${ep.season_number}E${ep.episode_number} - ${ep.title}</div>
+              </div>
+              <button class="btn-quick-tick" onclick="quickTick(${ep.id}, event)">
+                ${t('quick_tick')}
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderSeries(filter = 'all', search = '') {
+      const grid = document.getElementById('series-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      let list = allShows;
+      if (search) {
+        list = list.filter(s => s.title.toLowerCase().includes(search.toLowerCase()));
+      }
+      if (filter === 'watching') {
+        list = list.filter(s => s.next_episode);
+      } else if (filter === 'uptodate') {
+        list = list.filter(s => !s.next_episode);
+      }
+
+      list.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'show-card';
+        const img = s.poster_url || s.fanart_url || 'https://via.placeholder.com/300x180?text=' + encodeURIComponent(s.title);
+        const pct = Math.min(100, Math.round(((s.watched_eps || 0) / (s.total_eps || 1)) * 100));
+
+        card.innerHTML = `
+          <div class="card-cover poster-ratio" onclick="openShowModal(${s.id})">
+            <img src="${img}" alt="${s.title}" loading="lazy">
+            <span class="card-network-badge">${s.network || 'TV'}</span>
+          </div>
+          <div class="card-content" onclick="openShowModal(${s.id})">
+            <div class="card-title">${s.title}</div>
+            <div class="card-progress-bar">
+              <div class="card-progress-fill" style="width: ${pct}%;"></div>
+            </div>
+            <div class="card-progress-text">
+              <span>${formatNumber(pct)}%</span>
+              <span>${formatNumber(s.watched_eps || 0)} / ${formatNumber(s.total_eps || 0)}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterSeries(mode, btn) {
+      document.querySelectorAll('#tab-series .filter-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      renderSeries(mode, document.getElementById('series-search').value);
+    }
+
+    document.getElementById('series-search').addEventListener('input', (e) => {
+      renderSeries('all', e.target.value);
+    });
+
+    function renderMovies(filter = 'all') {
+      const grid = document.getElementById('movies-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      let list = allMovies;
+      if (filter === 'watched') list = list.filter(m => m.is_watched === 1);
+      if (filter === 'watchlist') list = list.filter(m => m.is_watched === 0);
+
+      list.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'show-card';
+        const img = m.poster_url || 'https://via.placeholder.com/300x450?text=' + encodeURIComponent(m.title);
+        const isWatched = m.is_watched === 1;
+
+        card.innerHTML = `
+          <div class="card-cover poster-ratio">
+            <img src="${img}" alt="${m.title}" loading="lazy">
+            <span class="card-network-badge">${m.release_year || 'Movie'}</span>
+          </div>
+          <div class="card-content">
+            <div class="card-title">${m.title}</div>
+            <div style="font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
+              <span>${formatNumber(m.runtime || 120)} min</span>
+              <span style="color: ${isWatched ? 'var(--green)' : 'var(--accent)'}; font-weight: 700;">
+                ${isWatched ? t('btn_mark_watched') : t('btn_add_watchlist')}
+              </span>
+            </div>
+            <div style="margin-top: auto; padding-top: 10px;">
+              <button class="btn-quick-tick" style="width: 100%; justify-content: center; background: ${isWatched ? 'var(--green)' : '#374151'};" onclick="toggleMovieWatched(${m.id})">
+                ${isWatched ? '✓ ' + t('btn_mark_watched') : t('btn_mark_watched')}
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterMovies(mode, btn) {
+      document.querySelectorAll('#tab-movies .filter-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      renderMovies(mode);
+    }
+
+    async function toggleMovieWatched(mId) {
+      await fetch(`/api/movies/${mId}/toggle`, { method: 'POST' });
+      await loadMovies();
+      await loadStats();
+    }
+
+    async function quickTick(epId, event) {
+      if (event) event.stopPropagation();
+      await fetch(`/api/episodes/${epId}/toggle`, { method: 'POST' });
+      await loadShows();
+      await loadStats();
+      if (currentShowDetails) {
+        const res = await fetch(`/api/shows/${currentShowDetails.id}`);
+        currentShowDetails = await res.json();
+        renderSeasonEpisodes();
+      }
+    }
+
+    // ----------------------------------------------------
+    // SHOW DETAILS MODAL
+    // ----------------------------------------------------
+    async function openShowModal(showId) {
+      try {
+        const res = await fetch(`/api/shows/${showId}`);
+        currentShowDetails = await res.json();
+
+        document.getElementById('modal-title').textContent = currentShowDetails.title;
+        document.getElementById('modal-network').textContent = currentShowDetails.network || 'TV';
+        document.getElementById('modal-banner-img').src = currentShowDetails.fanart_url || currentShowDetails.poster_url || '';
+
+        const watchedCount = currentShowDetails.seasons.reduce((acc, s) => acc + s.episodes.filter(e => e.is_watched).length, 0);
+        const totalCount = currentShowDetails.seasons.reduce((acc, s) => acc + s.episodes.length, 0);
+        document.getElementById('modal-progress-badge').textContent = `${formatNumber(watchedCount)} / ${formatNumber(totalCount)}`;
+
+        // Render Season Tabs
+        const seasonsNav = document.getElementById('modal-seasons-nav');
+        seasonsNav.innerHTML = '';
+        currentShowDetails.seasons.forEach((sn, idx) => {
+          const btn = document.createElement('button');
+          btn.className = `season-btn ${idx === 0 ? 'active' : ''}`;
+          btn.textContent = `${t('season')} ${formatNumber(sn.season_number)}`;
+          btn.onclick = () => selectSeason(sn.season_number, btn);
+          seasonsNav.appendChild(btn);
+        });
+
+        selectedSeasonNum = currentShowDetails.seasons[0] ? currentShowDetails.seasons[0].season_number : 1;
+        renderSeasonEpisodes();
+        document.getElementById('show-modal').style.display = 'flex';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function selectSeason(snNumber, btn) {
+      document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSeasonNum = snNumber;
+      renderSeasonEpisodes();
+    }
+
+    function renderSeasonEpisodes() {
+      const list = document.getElementById('modal-episodes-list');
+      list.innerHTML = '';
+      document.getElementById('season-info-text').textContent = `${t('season')} ${formatNumber(selectedSeasonNum)}`;
+
+      const currentSn = currentShowDetails.seasons.find(s => s.season_number === selectedSeasonNum);
+      if (!currentSn) return;
+
+      currentSn.episodes.forEach(ep => {
+        const row = document.createElement('div');
+        row.className = `episode-row ${ep.is_watched ? 'watched' : ''}`;
+        
+        row.innerHTML = `
+          <div class="ep-info">
+            <div class="ep-code-title">
+              <span class="ep-code">S${ep.season_number}E${ep.episode_number}</span>
+              <span class="ep-title">${ep.title}</span>
+            </div>
+            <div class="ep-meta">${formatNumber(ep.runtime || 45)} min ${ep.air_date ? '• ' + ep.air_date : ''}</div>
+            
+            <!-- Reaction Bar -->
+            <div class="ep-reaction-bar">
+              <button class="reaction-emoji-btn ${ep.reaction === '😍' ? 'active' : ''}" onclick="setEpisodeReaction(${ep.id}, '😍')">😍</button>
+              <button class="reaction-emoji-btn ${ep.reaction === '😂' ? 'active' : ''}" onclick="setEpisodeReaction(${ep.id}, '😂')">😂</button>
+              <button class="reaction-emoji-btn ${ep.reaction === '😭' ? 'active' : ''}" onclick="setEpisodeReaction(${ep.id}, '😭')">😭</button>
+              <button class="reaction-emoji-btn ${ep.reaction === '😱' ? 'active' : ''}" onclick="setEpisodeReaction(${ep.id}, '😱')">😱</button>
+              <button class="reaction-emoji-btn ${ep.reaction === '😴' ? 'active' : ''}" onclick="setEpisodeReaction(${ep.id}, '😴')">😴</button>
+            </div>
+          </div>
+          <div class="ep-controls">
+            <div class="ep-rewatch-box">
+              <span>${t('rewatch_btn')}:</span>
+              <button onclick="changeRewatch(${ep.id}, -1)">-</button>
+              <strong>${formatNumber(ep.rewatch_count || 0)}</strong>
+              <button onclick="changeRewatch(${ep.id}, 1)">+</button>
+            </div>
+            <button class="ep-check-btn ${ep.is_watched ? 'checked' : ''}" onclick="quickTick(${ep.id})">
+              ✓
+            </button>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    async function toggleSeasonAll() {
+      if (!currentShowDetails) return;
+      await fetch('/api/seasons/mark_all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          show_id: currentShowDetails.id,
+          season_number: selectedSeasonNum,
+          is_watched: 1
+        })
+      });
+      const res = await fetch(`/api/shows/${currentShowDetails.id}`);
+      currentShowDetails = await res.json();
+      renderSeasonEpisodes();
+      await loadShows();
+      await loadStats();
+    }
+
+    async function changeRewatch(epId, delta) {
+      await fetch(`/api/episodes/${epId}/rewatch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delta })
+      });
+      const res = await fetch(`/api/shows/${currentShowDetails.id}`);
+      currentShowDetails = await res.json();
+      renderSeasonEpisodes();
+      await loadStats();
+    }
+
+    async function setEpisodeReaction(epId, reaction) {
+      await fetch(`/api/episodes/${epId}/note`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reaction, note: '' })
+      });
+      const res = await fetch(`/api/shows/${currentShowDetails.id}`);
+      currentShowDetails = await res.json();
+      renderSeasonEpisodes();
+    }
+
+    function closeModal() {
+      document.getElementById('show-modal').style.display = 'none';
+      currentShowDetails = null;
+    }
+
+    // ----------------------------------------------------
+    // STRICT FUTURE CALENDAR & TIME SYNC
+    // ----------------------------------------------------
+    async function loadCalendar() {
+      try {
+        // 1. Check time sync status
+        try {
+          const tRes = await fetch('/api/time/sync');
+          const tData = await tRes.json();
+          const syncPill = document.getElementById('calendar-time-sync');
+          if (syncPill) {
+            if (tData.synced) {
+              syncPill.innerHTML = `🟢 Network NTP: ${tData.date}`;
+              syncPill.style.color = 'var(--green)';
+            } else {
+              syncPill.innerHTML = `🕒 System Clock: ${tData.date}`;
+              syncPill.style.color = 'var(--accent)';
+            }
+          }
+        } catch (te) {}
+
+        // 2. Fetch upcoming schedule
+        const res = await fetch('/api/calendar');
+        const items = await res.json();
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = '';
+
+        if (!items || items.length === 0) {
+          grid.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No future unreleased episodes or movies found in your library.</div>`;
+          return;
+        }
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+
+        items.forEach(ep => {
+          const card = document.createElement('div');
+          card.className = 'show-card';
+          const img = ep.show_poster || 'https://via.placeholder.com/300x180?text=No+Cover';
+          const airDate = ep.air_date || 'Future Release';
+          const isMovie = ep.is_movie;
+
+          card.innerHTML = `
+            <div class="card-cover">
+              <img src="${img}" alt="${ep.show_title}" loading="lazy">
+              <span class="card-network-badge">${isMovie ? 'Upcoming Movie' : (ep.show_network || 'TV')}</span>
+            </div>
+            <div class="card-content">
+              <div class="card-title">${ep.show_title}</div>
+              <div style="color: var(--accent); font-weight: 700; font-size: 13px; direction: ltr;">
+                ${isMovie ? 'Theatrical / Digital Release' : `S${ep.season_number}E${ep.episode_number} - ${ep.title}`}
+              </div>
+              <div style="background: rgba(255,255,255,0.04); padding: 6px 10px; border-radius: 6px; font-size: 12px; color: var(--text-muted); margin: 8px 0; display: flex; justify-content: space-between;">
+                <span>Release Date:</span>
+                <strong style="color: #fff; direction: ltr;">${airDate}</strong>
+              </div>
+              ${!isMovie ? `
+                <button class="btn-quick-tick" style="margin-top: auto;" onclick="quickTick(${ep.id}, event); loadCalendar();">
+                  ${t('quick_tick')}
+                </button>
+              ` : ''}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ----------------------------------------------------
+    // BADGES & PLOTLINE WRAPPED
+    // ----------------------------------------------------
+    async function loadBadges() {
+      try {
+        const res = await fetch('/api/badges');
+        currentBadges = await res.json();
+        const container = document.getElementById('badges-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        currentBadges.forEach(b => {
+          const card = document.createElement('div');
+          card.className = `badge-card ${b.unlocked ? 'unlocked' : 'locked'}`;
+          const pct = Math.min(100, Math.round((b.progress / (b.goal || 1)) * 100));
+          const title = (currentLang === 'fa' && b.title) ? b.title : (b.title_en || b.title);
+          const desc = (currentLang === 'fa' && b.desc) ? b.desc : (b.desc_en || b.desc);
+
+          card.innerHTML = `
+            <div class="badge-top">
+              <div class="badge-icon">${b.icon}</div>
+              <div class="badge-meta">
+                <div class="badge-title">${title}</div>
+                <div class="badge-desc">${desc}</div>
+              </div>
+            </div>
+            <div class="badge-progress-wrap">
+              <div class="badge-progress-bar">
+                <div class="badge-progress-fill" style="width: ${pct}%;"></div>
+              </div>
+              <div class="badge-status-tag">
+                <span>${b.unlocked ? '✓ Unlocked' : '🔒 Locked'}</span>
+                <span>${formatNumber(b.progress)} / ${formatNumber(b.goal)}</span>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        console.error('Error loading badges:', e);
+      }
+    }
+
+    async function downloadWrappedCard() {
+      const canvas = document.getElementById('wrapped-canvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // 1. Background gradient
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#090d16');
+      grad.addColorStop(0.5, '#1e1b4b');
+      grad.addColorStop(1, '#05070c');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Decorative circles
+      ctx.save();
+      ctx.fillStyle = 'rgba(245, 197, 24, 0.08)';
+      ctx.beginPath();
+      ctx.arc(w * 0.85, h * 0.15, 300, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(99, 102, 241, 0.12)';
+      ctx.beginPath();
+      ctx.arc(w * 0.15, h * 0.8, 400, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 3. Border frame
+      ctx.strokeStyle = '#f5c518';
+      ctx.lineWidth = 14;
+      ctx.strokeRect(30, 30, w - 60, h - 60);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(50, 50, w - 100, h - 100);
+
+      // 4. Header & Branding
+      ctx.fillStyle = '#f5c518';
+      ctx.font = 'bold 54px Vazirmatn, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('PLOTLINE WRAPPED', w / 2, 160);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '28px Vazirmatn, Arial, sans-serif';
+      ctx.fillText('Personal TV, Anime & Movie Watch Milestone Report', w / 2, 215);
+
+      // 5. Total Binge Box
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fillRect(100, 270, w - 200, 220);
+      ctx.strokeStyle = 'rgba(245, 197, 24, 0.3)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(100, 270, w - 200, 220);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '30px Vazirmatn, Arial, sans-serif';
+      ctx.fillText('Total Time Spent Watching', w / 2, 335);
+
+      const m = document.getElementById('b-months').textContent;
+      const d = document.getElementById('b-days').textContent;
+      const hr = document.getElementById('b-hours').textContent;
+      const timeStr = `${m} Months, ${d} Days, ${hr} Hours`;
+
+      ctx.fillStyle = '#f5c518';
+      ctx.font = 'bold 52px Vazirmatn, Arial, sans-serif';
+      ctx.fillText(timeStr, w / 2, 425);
+
+      // 6. Metrics Grid
+      const statBoxes = [
+        { label: 'Episodes Watched', val: document.getElementById('b-total-eps').textContent, x: 100, y: 530, w: 420, h: 180 },
+        { label: 'Movies Watched', val: document.getElementById('b-total-movies').textContent, x: 560, y: 530, w: 420, h: 180 },
+        { label: 'Shows Tracked', val: document.getElementById('b-total-shows').textContent, x: 100, y: 740, w: 420, h: 180 },
+        { label: 'Rewatches Logged', val: document.getElementById('stat-total-rewatches').textContent, x: 560, y: 740, w: 420, h: 180 }
+      ];
+
+      statBoxes.forEach(sb => {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.fillRect(sb.x, sb.y, sb.w, sb.h);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.strokeRect(sb.x, sb.y, sb.w, sb.h);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = 'bold 46px Vazirmatn, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(sb.val, sb.x + sb.w / 2, sb.y + 80);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '24px Vazirmatn, Arial, sans-serif';
+        ctx.fillText(sb.label, sb.x + sb.w / 2, sb.y + 135);
+      });
+
+      // 7. Footer watermark
+      ctx.fillStyle = 'rgba(245, 197, 24, 0.8)';
+      ctx.font = 'bold 24px Vazirmatn, Arial, sans-serif';
+      ctx.fillText('Generated by Plotline • 100% Offline-First & Private', w / 2, 1260);
+
+      const link = document.createElement('a');
+      link.download = `plotline-wrapped-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // ----------------------------------------------------
+    // DISCOVER TAB (TV, TMDB & JIKAN ANIME SEARCH)
+    // ----------------------------------------------------
+    async function loadDiscoverFeatured() {
+      try {
+        const res = await fetch('/api/discover/featured');
+        const items = await res.json();
+        renderDiscoverCards(items);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function setDiscoverType(type, btn) {
+      discoverType = type;
+      document.querySelectorAll('#tab-discover .filter-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      performDiscoverSearch();
+    }
+
+    async function performDiscoverSearch() {
+      const q = document.getElementById('discover-search-input').value.trim();
+      const status = document.getElementById('discover-search-status');
+      const heading = document.getElementById('discover-section-heading');
+
+      if (!q || q.length < 2) {
+        loadDiscoverFeatured();
+        heading.textContent = t('featured_heading');
+        status.style.display = 'none';
+        return;
+      }
+
+      status.style.display = 'block';
+      status.textContent = '🔍 Searching online metadata & anime database...';
+      heading.textContent = `${t('btn_search')}: "${q}"`;
+
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${discoverType}`);
+        const items = await res.json();
+
+        if (!items || items.length === 0) {
+          status.textContent = 'No matching titles found online.';
+          renderDiscoverCards([]);
+          return;
+        }
+
+        status.style.display = 'none';
+        renderDiscoverCards(items);
+      } catch (e) {
+        status.textContent = 'Error connecting to metadata servers.';
+        console.error(e);
+      }
+    }
+
+    document.getElementById('discover-search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') performDiscoverSearch();
+    });
+
+    function renderDiscoverCards(items) {
+      const grid = document.getElementById('discover-results-grid');
+      grid.innerHTML = '';
+
+      if (!items || items.length === 0) {
+        grid.innerHTML = '<div style="color: var(--text-muted); padding: 20px;">No titles to display.</div>';
+        return;
+      }
+
+      const existingShows = new Set(allShows.map(s => s.title.toLowerCase()));
+      const existingMovies = new Set(allMovies.map(m => m.title.toLowerCase()));
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'show-card';
+        const isShow = item.type === 'show' || item.source === 'tvmaze';
+        const isAnime = item.source === 'jikan';
+        const inLibrary = isShow 
+          ? existingShows.has((item.title || '').toLowerCase())
+          : existingMovies.has((item.title || '').toLowerCase());
+
+        const img = item.poster_url || 'https://via.placeholder.com/300x450?text=' + encodeURIComponent(item.title);
+        const year = item.premiered ? item.premiered.slice(0, 4) : (item.release_year || '');
+        const rating = item.rating ? `⭐ ${item.rating}` : '';
+
+        card.innerHTML = `
+          <div class="card-cover poster-ratio">
+            <img src="${img}" alt="${item.title}" loading="lazy">
+            <span class="card-network-badge">${item.network || (isShow ? 'TV Series' : 'Movie')}</span>
+            ${isAnime ? '<span class="anime-tag">MAL Anime</span>' : ''}
+          </div>
+          <div class="card-content">
+            <div class="card-title">${item.title}</div>
+            <div style="font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; margin-bottom: 6px;">
+              <span>${year}</span>
+              ${rating ? `<span>${rating}</span>` : ''}
+              <span>${item.runtime ? item.runtime + ' min' : ''}</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
+              ${item.overview || 'No overview available.'}
+            </p>
+            <div style="margin-top: auto; padding-top: 10px;">
+              ${inLibrary ? `
+                <button class="btn-add" style="width: 100%; justify-content: center; background: #374151; color: var(--green); cursor: default;">
+                  ${t('btn_in_library')}
+                </button>
+              ` : isShow ? `
+                <button class="btn-add" style="width: 100%; justify-content: center;" onclick="trackShowFromDiscover(${JSON.stringify(item).replace(/"/g, '&quot;')}, this)">
+                  ${isAnime ? '+ Track Anime' : t('btn_add_show')}
+                </button>
+              ` : `
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn-add" style="flex: 1; justify-content: center; font-size: 12px; padding: 8px 6px;" onclick="trackMovieFromDiscover(${JSON.stringify(item).replace(/"/g, '&quot;')}, 'Plan to Watch', this)">
+                    ${t('btn_add_watchlist')}
+                  </button>
+                  <button class="btn-add" style="flex: 1; justify-content: center; background: var(--green); color: #fff; font-size: 12px; padding: 8px 6px;" onclick="trackMovieFromDiscover(${JSON.stringify(item).replace(/"/g, '&quot;')}, 'Watched', this)">
+                    ${t('btn_mark_watched')}
+                  </button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function trackShowFromDiscover(item, btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Adding show & episodes...';
+
+      const endpoint = item.source === 'jikan' ? '/api/shows/import_jikan' : '/api/shows/import_tvmaze';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+        const result = await res.json();
+        if (result.success) {
+          btn.textContent = t('btn_in_library');
+          btn.style.background = '#374151';
+          btn.style.color = 'var(--green)';
+          await loadShows();
+          await loadStats();
+        } else {
+          alert('Error adding show: ' + (result.error || ''));
+          btn.disabled = false;
+          btn.textContent = t('btn_add_show');
+        }
+      } catch (e) {
+        alert('Network error while tracking show.');
+        btn.disabled = false;
+      }
+    }
+
+    async function trackMovieFromDiscover(item, statusStr, btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Adding movie...';
+
+      try {
+        const res = await fetch('/api/movies/import_online', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: item.title,
+            release_year: item.release_year || (item.premiered ? item.premiered.slice(0, 4) : 2024),
+            runtime: item.runtime || 120,
+            overview: item.overview || '',
+            poster_url: item.poster_url || '',
+            status: statusStr
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          btn.parentElement.innerHTML = `
+            <button class="btn-add" style="width: 100%; justify-content: center; background: #374151; color: var(--green); cursor: default;">
+              ${t('btn_in_library')}
+            </button>
+          `;
+          await loadMovies();
+          await loadStats();
+        }
+      } catch (e) {
+        alert('Error adding movie.');
+        btn.disabled = false;
+      }
+    }
+
+    async function submitNewMovie() {
+      const title = document.getElementById('add-m-title').value.trim();
+      if (!title) return alert('Title required');
+      const year = parseInt(document.getElementById('add-m-year').value) || 2024;
+      const runtime = parseInt(document.getElementById('add-m-runtime').value) || 120;
+      const status = document.getElementById('add-m-status').value;
+
+      await fetch('/api/movies/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, release_year: year, runtime, status })
+      });
+      alert('Movie added!');
+      await loadMovies();
+      await loadStats();
+      switchTab('movies');
+    }
+
+    async function submitNewShow() {
+      const title = document.getElementById('add-s-title').value.trim();
+      if (!title) return alert('Title required');
+      const seasons_count = parseInt(document.getElementById('add-s-seasons').value) || 1;
+      const episodes_per_season = parseInt(document.getElementById('add-s-eps').value) || 10;
+
+      await fetch('/api/shows/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, seasons_count, episodes_per_season })
+      });
+      alert('Show added!');
+      await loadShows();
+      await loadStats();
+      switchTab('series');
+    }
+
+    // ----------------------------------------------------
+    // LOCAL MEDIA SCANNER (Inside Settings Modal)
+    // ----------------------------------------------------
+    async function scanLocalFolder() {
+      const folderInput = document.getElementById('scanner-folder-input');
+      const folderPath = folderInput.value.trim();
+      const status = document.getElementById('scanner-status');
+      const container = document.getElementById('scanner-results-container');
+      const tbody = document.getElementById('scanner-results-body');
+
+      if (!folderPath) {
+        alert('Please specify a folder path.');
+        return;
+      }
+
+      status.style.display = 'block';
+      status.textContent = '⏳ Scanning video files in folder...';
+      tbody.innerHTML = '';
+      container.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/scanner/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folder_path: folderPath })
+        });
+        const d = await res.json();
+
+        if (d.error) {
+          status.textContent = d.error;
+          return;
+        }
+
+        if (d.items.length === 0) {
+          status.textContent = 'No suitable video files found in this folder.';
+          return;
+        }
+
+        status.textContent = `✓ Found ${formatNumber(d.items.length)} video files:`;
+        container.style.display = 'block';
+
+        d.items.forEach(it => {
+          const tr = document.createElement('tr');
+          const trackedBadge = it.is_already_tracked
+            ? '<span style="color: var(--green); font-weight: 600;">✓ In Library</span>'
+            : '<span style="color: var(--accent); font-weight: 600;">➕ Untracked</span>';
+
+          const actionBtn = it.is_already_tracked
+            ? '<span style="color: var(--text-muted); font-size: 11px;">Tracked</span>'
+            : `<button class="btn-add" style="padding: 4px 10px; font-size: 11px;" onclick="quickAddScannedMovie('${it.cleaned_title.replace(/'/g, "\\'")}', ${it.year}, this)">+ Add Movie</button>`;
+
+          tr.innerHTML = `
+            <td style="font-weight: 600;">${it.cleaned_title}</td>
+            <td style="direction: ltr;">${formatNumber(it.year)}</td>
+            <td style="direction: ltr;">${formatNumber(it.size_mb)} MB</td>
+            <td>${trackedBadge}</td>
+            <td>${actionBtn}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (e) {
+        status.textContent = 'Error scanning folder.';
+        console.error(e);
+      }
+    }
+
+    async function quickAddScannedMovie(title, year, btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳...';
+      try {
+        const res = await fetch('/api/movies/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: title,
+            release_year: year || 2024,
+            runtime: 120,
+            status: 'Plan to Watch'
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          btn.parentElement.innerHTML = '<span style="color: var(--green); font-weight: 600;">✓ Added</span>';
+          await loadMovies();
+          await loadStats();
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Error';
+      }
+    }
+
+    // ----------------------------------------------------
+    // DEDICATED SETTINGS MODAL
+    // ----------------------------------------------------
+    function openSettingsModal(tab = 'profiles') {
+      document.getElementById('settings-modal').style.display = 'flex';
+      loadStorageStats();
+      const targetNav = Array.from(document.querySelectorAll('.settings-nav-item')).find(b => b.getAttribute('onclick').includes(tab));
+      if (targetNav) switchSettingsTab(tab, targetNav);
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').style.display = 'none';
+    }
+
+    function switchSettingsTab(paneId, btn) {
+      document.querySelectorAll('.settings-nav-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.settings-pane').forEach(p => p.classList.remove('active'));
+      const activePane = document.getElementById('spane-' + paneId);
+      if (activePane) activePane.classList.add('active');
+    }
+
+    async function loadStorageStats() {
+      try {
+        const res = await fetch('/api/media/stats');
+        const d = await res.json();
+        
+        // Display used storage
+        const display = document.getElementById('storage-stats-display');
+        if (display) {
+          display.textContent = `${formatNumber(d.total_mb)} MB (${formatNumber(d.total_files)} ${currentLang === 'fa' ? 'پوستر' : 'posters'})`;
+        }
+
+        // Display pending download size calculation preview
+        const pendingBox = document.getElementById('pending-download-info');
+        const cacheBtn = document.getElementById('btn-cache-all-posters');
+        if (d.pending) {
+          if (d.pending.uncached_count > 0) {
+            const sizeStr = `~${formatNumber(d.pending.estimated_mb)} MB (${formatNumber(d.pending.uncached_count)} ${currentLang === 'fa' ? 'پوستر دانلود نشده' : 'uncached posters'})`;
+            if (pendingBox) pendingBox.innerHTML = `<span>⏳ ${currentLang === 'fa' ? 'حجم دانلودی:' : 'Pending download:'} <strong>${sizeStr}</strong></span>`;
+            if (cacheBtn) {
+              cacheBtn.disabled = false;
+              cacheBtn.style.opacity = '1';
+              cacheBtn.textContent = currentLang === 'fa' 
+                ? `📥 دانلود پوسترهای کتابخانه (~${formatNumber(d.pending.estimated_mb)} مگابایت)`
+                : `📥 Download Library Posters (~${formatNumber(d.pending.estimated_mb)} MB for ${formatNumber(d.pending.uncached_count)} titles)`;
+            }
+          } else {
+            if (pendingBox) pendingBox.innerHTML = `<span style="color: var(--green);">✓ ${currentLang === 'fa' ? 'تمامی پوسترها آفلاین هستند' : 'All posters cached offline'}</span>`;
+            if (cacheBtn) {
+              cacheBtn.textContent = currentLang === 'fa' 
+                ? '✓ تمام پوسترها به صورت آفلاین ذخیره شده‌اند' 
+                : '✓ All Library Posters Cached Offline (0 MB Pending)';
+            }
+          }
+        }
+
+        const streamCard = document.getElementById('mode-card-stream');
+        const dlCard = document.getElementById('mode-card-download');
+        if (streamCard && dlCard) {
+          if (d.cache_mode === 'download') {
+            dlCard.classList.add('active');
+            streamCard.classList.remove('active');
+          } else {
+            streamCard.classList.add('active');
+            dlCard.classList.remove('active');
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function selectCacheMode(mode) {
+      try {
+        await fetch('/api/media/cache_mode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode })
+        });
+        await loadStorageStats();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function cacheAllPosters() {
+      const status = document.getElementById('cache-all-status');
+      if (status) status.textContent = '⏳ Downloading all posters to local storage...';
+      try {
+        const res = await fetch('/api/media/cache_all', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const d = await res.json();
+        if (status) status.textContent = `✓ Cached ${formatNumber(d.cached_count)} posters locally!`;
+        await loadStorageStats();
+      } catch (e) {
+        if (status) status.textContent = 'Error caching posters.';
+      }
+    }
+
+    function copyWebhookUrl() {
+      const input = document.getElementById('webhook-url-input');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      alert('Webhook URL copied to clipboard!');
+    }
+
+    function downloadBackup() {
+      window.location.href = '/api/backup';
+    }
+
+    function handleLetterboxdUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const status = document.getElementById('migration-status');
+      status.textContent = '⏳ Importing Letterboxd films...';
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const csv_content = event.target.result;
+        const res = await fetch('/api/import/letterboxd', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csv_content })
+        });
+        const d = await res.json();
+        status.textContent = `✓ Successfully imported ${formatNumber(d.imported_movies)} films from Letterboxd!`;
+        await loadMovies();
+        await loadStats();
+      };
+      reader.readAsText(file);
+    }
+
+    function handleTraktUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const status = document.getElementById('migration-status');
+      status.textContent = '⏳ Importing Trakt history...';
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const json_content = event.target.result;
+        const res = await fetch('/api/import/trakt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ json_content })
+        });
+        const d = await res.json();
+        status.textContent = `✓ Trakt history imported successfully!`;
+        await loadShows();
+        await loadMovies();
+        await loadStats();
+      };
+      reader.readAsText(file);
+    }
+
+    function handleTVTimeUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const status = document.getElementById('migration-status');
+      status.textContent = '⏳ Importing TV Time backup...';
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const json_content = event.target.result;
+        const res = await fetch('/api/import/tvtime', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ json_content })
+        });
+        const d = await res.json();
+        status.textContent = `✓ TV Time archive restored successfully!`;
+        await loadShows();
+        await loadMovies();
+        await loadStats();
+      };
+      reader.readAsText(file);
+    }
+
+    // ----------------------------------------------------
+    // INITIALIZATION
+    // ----------------------------------------------------
+    applyLanguage(currentLang);
+    loadProfiles();
+    loadStats();
+    loadShows();
+    loadMovies();
+    loadBadges();
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Registration error:', err));
+      });
+    }
+  </script>
+</body>
+</html>

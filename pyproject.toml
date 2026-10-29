@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plotline"
+version = "1.1.0"
+authors = [
+  { name = "heat-core" },
+]
+description = "The self-hosted, offline-first TV, Anime & Movie tracker with exact binge-time calculation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["tvtime", "tvtime-alternative", "media-tracker", "self-hosted", "offline-first", "binge-time", "anime-tracker", "movie-tracker"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Video",
+    "Environment :: Web Environment",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/heat-core/plotline"
+"Bug Tracker" = "https://github.com/heat-core/plotline/issues"
+
+[project.scripts]
+plotline = "server:main"

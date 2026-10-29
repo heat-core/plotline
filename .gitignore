@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Local extracted containers & backups
+my_tvtime_backup_archive/
+extracted/
+*.imazingapp
+*.tar
+*.zip
+.lock
+recovered_tvtime_data.json
+
+# Database files & local cache
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+data/media/
+
+# Desktop executable build outputs
+dist/
+build/
+*.spec
+
+# Internal Markdown & planning files (only public README files are published)
+*.md
+!README.md
+!README.fa.md
+
+# OS specific files
+.DS_Store
+Thumbs.db

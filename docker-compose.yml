@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  plotline:
+    image: plotline:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plotline
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./data:/app/data
